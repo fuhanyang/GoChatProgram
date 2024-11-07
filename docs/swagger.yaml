@@ -1,0 +1,125 @@
+basePath: 这里写base path
+definitions:
+  FunctionalMember.FuncMember:
+    type: object
+  User.UserInfo:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+host: 这里写接口服务的host
+info:
+  contact:
+    email: support@swagger.io
+    name: 这里写联系人信息
+    url: http://www.swagger.io/support
+  description: 这里写描述信息
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: 这里写标题
+  version: "1.0"
+paths:
+  /entry/:
+    get:
+      description: 加载用户登录界面
+      responses:
+        "200":
+          description: OK
+      security:
+      - ApiKeyAuth: []
+      summary: 加载用户登录界面接口
+      tags:
+      - 加载用户登录界面接口
+    post:
+      description: 用户登录接口
+      parameters:
+      - description: 用户登录信息
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/FunctionalMember.FuncMember'
+      responses:
+        "200":
+          description: OK
+      security:
+      - ApiKeyAuth: []
+      summary: 用户登录接口
+      tags:
+      - 用户登录接口
+  /pri/:
+    get:
+      description: 加载最初界面
+      responses:
+        "200":
+          description: OK
+      security:
+      - ApiKeyAuth: []
+      summary: 加载最初界面接口
+      tags:
+      - 加载最初界面接口
+  /regi/:
+    get:
+      description: 加载用户注册界面
+      responses:
+        "200":
+          description: OK
+      security:
+      - ApiKeyAuth: []
+      summary: 加载用户注册界面接口
+      tags:
+      - 加载用户注册界面接口
+    post:
+      description: 用户注册接口
+      parameters:
+      - description: 用户注册信息
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/User.UserInfo'
+      responses:
+        "200":
+          description: OK
+      security:
+      - ApiKeyAuth: []
+      summary: 用户注册接口
+      tags:
+      - 用户注册接口
+  /users/{accountNum}/:
+    get:
+      description: 加载用户信息界面
+      responses:
+        "200":
+          description: OK
+      security:
+      - ApiKeyAuth: []
+      summary: 加载用户信息界面接口
+      tags:
+      - 加载用户信息界面接口
+  /users/rec//{rec_id}/{accountNum}:
+    get:
+      description: 加载用户消息界面
+      responses:
+        "200":
+          description: OK
+      security:
+      - ApiKeyAuth: []
+      summary: 加载用户消息界面接口
+      tags:
+      - 加载用户消息界面接口
+    post:
+      description: 发送消息给用户接口
+      responses:
+        "200":
+          description: OK
+      security:
+      - ApiKeyAuth: []
+      summary: 发送消息给用户接口
+      tags:
+      - 发送消息给用户接口
+swagger: "2.0"

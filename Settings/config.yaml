@@ -1,0 +1,33 @@
+app:
+  name: "My App"
+  mode: "dev"
+  port: 8080
+  version: "1.0.0"
+mysql:
+  host: "127.0.0.1"
+  port: 3306
+  user_name: "root"
+  password: "56563096660fc"
+  db_name: "sever_demo"
+  max_open_conns: 10
+  max_idle_conns: 5
+log:
+  level: "debug"
+  file_name: "app.log"
+  max_size: 100
+  max_backups: 10
+  max_age: 30
+redis:
+  host: "localhost"
+  port: 6379
+  password: ""
+  db: 0
+  pool_size: 10
+rabbit_mq:
+  host: "localhost"
+  port: 8080
+  user_name: "user"
+  password: "56563096660fc"
+snowflake:
+  machine_id: 1
+  start_time: "2006-01-02T15:04:05-07:00"

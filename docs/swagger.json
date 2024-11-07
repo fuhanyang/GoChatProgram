@@ -1,0 +1,206 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "这里写描述信息",
+        "title": "这里写标题",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "这里写联系人信息",
+            "url": "http://www.swagger.io/support",
+            "email": "support@swagger.io"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "host": "这里写接口服务的host",
+    "basePath": "这里写base path",
+    "paths": {
+        "/entry/": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "加载用户登录界面",
+                "tags": [
+                    "加载用户登录界面接口"
+                ],
+                "summary": "加载用户登录界面接口",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "用户登录接口",
+                "tags": [
+                    "用户登录接口"
+                ],
+                "summary": "用户登录接口",
+                "parameters": [
+                    {
+                        "description": "用户登录信息",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/FunctionalMember.FuncMember"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/pri/": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "加载最初界面",
+                "tags": [
+                    "加载最初界面接口"
+                ],
+                "summary": "加载最初界面接口",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/regi/": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "加载用户注册界面",
+                "tags": [
+                    "加载用户注册界面接口"
+                ],
+                "summary": "加载用户注册界面接口",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "用户注册接口",
+                "tags": [
+                    "用户注册接口"
+                ],
+                "summary": "用户注册接口",
+                "parameters": [
+                    {
+                        "description": "用户注册信息",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/User.UserInfo"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/users/rec//{rec_id}/{accountNum}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "加载用户消息界面",
+                "tags": [
+                    "加载用户消息界面接口"
+                ],
+                "summary": "加载用户消息界面接口",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "发送消息给用户接口",
+                "tags": [
+                    "发送消息给用户接口"
+                ],
+                "summary": "发送消息给用户接口",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/users/{accountNum}/": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "加载用户信息界面",
+                "tags": [
+                    "加载用户信息界面接口"
+                ],
+                "summary": "加载用户信息界面接口",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "FunctionalMember.FuncMember": {
+            "type": "object"
+        },
+        "User.UserInfo": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

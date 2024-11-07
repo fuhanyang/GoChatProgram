@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>获取数据示例</title>
+</head>
+<body>
+<h1>从服务器获取数据</h1>
+<div id="data"></div>
+
+<script>
+    // 使用 fetch API 请求数据
+    fetch('http://localhost:9090/data')
+    .then(response => {
+    if (!response.ok) {
+    throw new Error('网络错误: ' + response.status);
+}
+    return response.json(); // 解析 JSON 数据
+})
+    .then(data => {
+    // 将数据渲染到页面上
+    const dataDiv = document.getElementById('data');
+    dataDiv.innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+})
+    .catch(error => {
+    console.error('获取数据时出错:', error);
+});
+</script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>发送 GET 请求示例</title>
+</head>
+<body>
+<h1>发送带参数的 GET 请求</h1>
+<button id="sendRequest">发送请求</button>
+<div id="response"></div>
+
+<script>
+    document.getElementById('sendRequest').addEventListener('click', function() {
+        // 定义请求参数
+        const accountNum = '117065'; // 示例账号
+        const recId = '1'; // 示例记录 ID
+
+        // 构建 URL 和查询字符串
+        const url = `http://localhost:9090/users/rec/${recId}/${accountNum}`;
+
+        // 使用 fetch API 发送 GET 请求
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('网络错误: ' + response.status);
+                }
+                return response.json(); // 解析 JSON 数据
+            })
+            .then(data => {
+                // 将响应显示到页面上
+                const responseDiv = document.getElementById('response');
+                responseDiv.innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            })
+            .catch(error => {
+                console.error('获取数据时出错:', error);
+            });
+    });
+</script>
+</body>
+</html>
+
