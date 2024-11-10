@@ -23,7 +23,18 @@ info:
   title: 这里写标题
   version: "1.0"
 paths:
-  /entry/:
+  /pri/:
+    get:
+      description: 加载最初界面
+      responses:
+        "200":
+          description: OK
+      security:
+      - ApiKeyAuth: []
+      summary: 加载最初界面接口
+      tags:
+      - 加载最初界面接口
+  /pri/entry/:
     get:
       description: 加载用户登录界面
       responses:
@@ -51,18 +62,7 @@ paths:
       summary: 用户登录接口
       tags:
       - 用户登录接口
-  /pri/:
-    get:
-      description: 加载最初界面
-      responses:
-        "200":
-          description: OK
-      security:
-      - ApiKeyAuth: []
-      summary: 加载最初界面接口
-      tags:
-      - 加载最初界面接口
-  /regi/:
+  /pri/regi/:
     get:
       description: 加载用户注册界面
       responses:
@@ -90,7 +90,7 @@ paths:
       summary: 用户注册接口
       tags:
       - 用户注册接口
-  /users/{accountNum}/:
+  /users//:
     get:
       description: 加载用户信息界面
       responses:
@@ -101,7 +101,7 @@ paths:
       summary: 加载用户信息界面接口
       tags:
       - 加载用户信息界面接口
-  /users/rec//{rec_id}/{accountNum}:
+  /users/rec/{rec_id}:
     get:
       description: 加载用户消息界面
       responses:
@@ -122,4 +122,26 @@ paths:
       summary: 发送消息给用户接口
       tags:
       - 发送消息给用户接口
+  /users/signoff:
+    post:
+      description: 用户登出接口
+      responses:
+        "200":
+          description: OK
+      security:
+      - ApiKeyAuth: []
+      summary: 用户登出接口
+      tags:
+      - ""
+  /users/turnOff:
+    post:
+      description: 结束当前业务循环
+      responses:
+        "200":
+          description: OK
+      security:
+      - ApiKeyAuth: []
+      summary: 结束当前业务循环
+      tags:
+      - 结束当前业务循环
 swagger: "2.0"

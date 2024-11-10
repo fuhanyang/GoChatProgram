@@ -2,9 +2,10 @@ package UserHandle
 
 import (
 	"MyTest/DAO/Mysql"
+	"MyTest/Define"
+	"MyTest/Logic/Notice"
 	"MyTest/Logic/RuleChain"
-	"MyTest/Logic/RuleChain/UserRuleChain"
-	"MyTest/Logic/log"
+	"MyTest/Logic/RuleChain/Default"
 	"MyTest/Logic/user_managment/TypeDefine"
 	"MyTest/Models/Error"
 	"MyTest/Models/Log"
@@ -37,23 +38,15 @@ func GetUserParams(u User.UserInf) (params RuleChain.Params) {
 		//游客
 	} else {
 
-		params["ch"] = TypeDefine.UserMap[GetAccountNum(user.GetID())].Opt.Ch
-
-		params["name"] = user.Name
-		params["accountNum"] = user.AccountNum
-		params["password"] = user.PassWord
-		params["ip"] = user.IP
-		params["id"] = user.ID
-		params["identifycode"] = UserIdentityCode(GetAccountNum(u.GetID()), u.GetIP())
+		params[TypeDefine.Ch] = TypeDefine.UserMap[GetAccountNum(user.GetID())].Opt.Ch
+		params[TypeDefine.Name] = user.Name
+		params[TypeDefine.AccountNum] = user.AccountNum
+		params[TypeDefine.Password] = user.PassWord
+		params[TypeDefine.IP] = user.IP
+		params[TypeDefine.ID] = user.ID
 
 	}
 	return params
-}
-
-func CaptureUser(UserParams RuleChain.Params) func(f func(RuleChain.Params)) {
-	return func(f func(RuleChain.Params)) {
-		f(UserParams)
-	}
 }
 
 // GetOptCh 读取用户操作的管道
@@ -67,28 +60,32 @@ func GetViewDataCh(u FunctionalMember.FuncMember) TypeDefine.UserViewData {
 }
 
 // UserRootHandle 用户业务
-func UserRootHandle(user User.UserInf, ctx context.Context) error {
+func UserRootHandle(user User.UserInf) error {
 	//捕获异常
-	defer log.RecoverPanic()
+	defer Notice.RecoverPanic()
 
 	if u, ok := user.(*FunctionalMember.FuncMember); !ok {
 		return Error.ErrorInit("This is a guest", 400)
 	} else {
 		//
-
 		params := GetUserParams(u)
-
 		//启动业务逻辑
-
-		err := UserRuleChain.LoadUserRootRuleChain().Apply(ctx, params)
-		if err != nil {
-			//用户出问题终止这个用户协程
-			panic(err)
-		} else {
-			fmt.Println("用户业务结束")
-			return nil
-		}
-
+		ctx, cancel := context.WithTimeout(context.Background(), Define.TokenExpireDuration)
+		Define.CancelMap[GetAccountNum(u.GetID())] = cancel
+		go func() {
+			defer cancel()
+			err := Default.LoadUserRootRuleChain().Apply(ctx, params) //异步执行业务，业务结束则会cancel
+			if err != nil {
+				//用户出问题终止这个用户协程
+				Error.NewErrHandle(err).WriteErr()
+			} else {
+				fmt.Println("用户业务结束")
+			}
+			if user.GetOnlineStatus() == true {
+				user.ChangeOnlineStatus()
+			}
+		}()
+		return nil
 	}
 }
 
@@ -97,21 +94,10 @@ func GetMsgReceiver(AccountNum int64) *FunctionalMember.FuncMember {
 	return nil
 }
 
-// MatchUser 验证识别码
-func MatchUser(accountStr string, accountNum int64, IP string) error {
-	UserObj := TypeDefine.UserMap[accountNum]
-	if accountStr+IP == UserObj.IdentityCode {
-		return nil
-	} else {
-		return Error.ErrorInit("Wrong User Code !", 400)
-	}
-
-}
-
 // UserOnline 用户上线//返回用户id
-func UserOnline(user User.UserInf, ctx context.Context) error {
+func UserOnline(user User.UserInf) error {
 	//捕获异常
-	defer log.RecoverPanic()
+	defer Notice.RecoverPanic()
 
 	//改变在线状态
 	if user.GetOnlineStatus() == false {
@@ -121,9 +107,9 @@ func UserOnline(user User.UserInf, ctx context.Context) error {
 	//start handler
 	go func() {
 		//捕获异常
-		defer log.RecoverPanic()
+		defer Notice.RecoverPanic()
 
-		Error.NewErrHandle(UserRootHandle(user, ctx)).WriteErr().ViewErr()
+		Error.NewErrHandle(UserRootHandle(user)).WriteErr().ViewErr()
 
 	}()
 
@@ -137,7 +123,7 @@ func UserOnline(user User.UserInf, ctx context.Context) error {
 // UserOffline 用户下线
 func UserOffline(user User.UserInf) error {
 	//捕获异常
-	defer log.RecoverPanic()
+	defer Notice.RecoverPanic()
 
 	//改变在线状态
 	status := user.GetOnlineStatus()

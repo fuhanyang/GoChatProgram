@@ -1,7 +1,7 @@
-package notice
+package Mq
 
 import (
-	"MyTest/Logic/log"
+	"MyTest/Logic/Notice"
 	"MyTest/Models/Error"
 	"MyTest/rabbitmq"
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -9,7 +9,7 @@ import (
 
 func SendNotice(notice string) error {
 	//捕获异常
-	defer log.RecoverPanic()
+	defer Notice.RecoverPanic()
 
 	if rabbitmq.Conn == nil {
 		return Error.ErrorInit("not connected to RabbitMQ", 404)
@@ -17,7 +17,7 @@ func SendNotice(notice string) error {
 	//把公告发给用户
 	err := rabbitmq.Ch.Publish(
 		"notice_direct",
-		"notice",
+		"mq",
 		false,
 		false,
 		amqp.Publishing{
@@ -27,7 +27,7 @@ func SendNotice(notice string) error {
 	if err != nil {
 		return err
 	}
-	err = log.WriteLog("notice", notice)
-	Error.FailOnError(err, "notice fail to write")
+	err = Notice.WriteLog("mq", notice)
+	Error.FailOnError(err, "mq fail to write")
 	return err
 }

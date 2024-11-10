@@ -1,6 +1,8 @@
 package Controller
 
 import (
+	"MyTest/Define"
+	"MyTest/Logic/user_managment/TypeDefine"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
@@ -20,9 +22,8 @@ type CustomClaims struct {
 	jwt.RegisteredClaims        // 内嵌标准的声明
 }
 
-const TokenExpireDuration = time.Hour * 24
-const UserName = "username"
-const AccountNum = "account_num"
+const TokenExpireDuration = Define.TokenExpireDuration
+const UserName = Define.UserName
 
 // CustomSecret 用于加密的字符串
 var CustomSecret = []byte("canyang")
@@ -100,7 +101,7 @@ func JWTAuthMiddleware() func(c *gin.Context) {
 		}
 		// 将当前请求的username信息保存到请求的上下文c上
 		c.Set(UserName, mc.Username)
-		c.Set(AccountNum, mc.AccountNum)
+		c.Set(TypeDefine.AccountNum, mc.AccountNum)
 		c.Next() // 后续的处理函数可以用过c.Get(UserName)来获取当前请求的用户信息
 	}
 }

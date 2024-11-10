@@ -1,4 +1,4 @@
-package log
+package Notice
 
 import (
 	"MyTest/Models/Log"

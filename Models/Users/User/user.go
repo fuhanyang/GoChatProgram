@@ -8,6 +8,7 @@ import (
 	"time"
 )
 
+// User 用户父类
 type User struct {
 	IP       string
 	IsOnline bool

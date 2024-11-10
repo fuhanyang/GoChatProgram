@@ -1,12 +1,13 @@
 package Controller
 
 import (
-	"MyTest/Logic/log"
+	"MyTest/Logic/Notice"
 	"MyTest/Logic/user_managment/UserCreate"
 	"MyTest/Models/Error"
 	"MyTest/Models/Users/User"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 // LoadRegiPage 加载用户注册界面接口
@@ -18,7 +19,9 @@ import (
 // @Router /pri/regi/ [get]
 func LoadRegiPage() gin.HandlerFunc {
 	return func(c *gin.Context) {
-
+		c.JSON(http.StatusOK, gin.H{
+			"msg": "signup page load success",
+		})
 	}
 }
 
@@ -33,7 +36,7 @@ func LoadRegiPage() gin.HandlerFunc {
 func UserRegister() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		//捕获异常
-		defer log.RecoverPanic()
+		defer Notice.RecoverPanic()
 
 		ip := c.ClientIP()
 		fmt.Println(ip)

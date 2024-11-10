@@ -6,7 +6,6 @@ import (
 	"MyTest/Logic/user_managment/Snowflake"
 	"MyTest/Routers"
 	"MyTest/Settings"
-	"MyTest/rabbitmq"
 	"fmt"
 )
 
@@ -31,8 +30,8 @@ func main() {
 	}
 
 	//rabbitmq
-	rabbitmq.Init(Settings.Config.RabbitMQConfig)
-	defer rabbitmq.MqClose()
+	//rabbitmq.Init(Settings.Config.RabbitMQConfig)
+	//defer rabbitmq.MqClose()
 
 	//mysql
 	Mysql.Init(Settings.Config.MysqlConfig)
@@ -55,4 +54,5 @@ func main() {
 	}
 
 	router.Run(":9090")
+
 }

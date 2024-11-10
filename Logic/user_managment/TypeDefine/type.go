@@ -2,6 +2,16 @@ package TypeDefine
 
 import "sync"
 
+const (
+	Ch         = "ch"
+	Name       = "name"
+	AccountNum = "account_num"
+	Password   = "password"
+	IP         = "ip"
+	ID         = "id"
+	Opt        = "opt"
+)
+
 // UserMap 后续可以使用redis代替
 var UserMap map[int64]UserObj
 var Mu sync.Mutex
@@ -30,7 +40,6 @@ type UserViewData struct {
 
 // UserObj 用户交互数据的实例
 type UserObj struct {
-	Opt          UserOpt      //用户操作的通道
-	ViewData     UserViewData //与前端交互的数据
-	IdentityCode string
+	Opt      UserOpt      //用户操作的通道
+	ViewData UserViewData //与前端交互的数据
 }

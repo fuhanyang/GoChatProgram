@@ -18,7 +18,26 @@
     "host": "这里写接口服务的host",
     "basePath": "这里写base path",
     "paths": {
-        "/entry/": {
+        "/pri/": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "加载最初界面",
+                "tags": [
+                    "加载最初界面接口"
+                ],
+                "summary": "加载最初界面接口",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/pri/entry/": {
             "get": {
                 "security": [
                     {
@@ -65,26 +84,7 @@
                 }
             }
         },
-        "/pri/": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "加载最初界面",
-                "tags": [
-                    "加载最初界面接口"
-                ],
-                "summary": "加载最初界面接口",
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
-        },
-        "/regi/": {
+        "/pri/regi/": {
             "get": {
                 "security": [
                     {
@@ -131,7 +131,26 @@
                 }
             }
         },
-        "/users/rec//{rec_id}/{accountNum}": {
+        "/users//": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "加载用户信息界面",
+                "tags": [
+                    "加载用户信息界面接口"
+                ],
+                "summary": "加载用户信息界面接口",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/users/rec/{rec_id}": {
             "get": {
                 "security": [
                     {
@@ -167,18 +186,37 @@
                 }
             }
         },
-        "/users/{accountNum}/": {
-            "get": {
+        "/users/signoff": {
+            "post": {
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "加载用户信息界面",
+                "description": "用户登出接口",
                 "tags": [
-                    "加载用户信息界面接口"
+                    ""
                 ],
-                "summary": "加载用户信息界面接口",
+                "summary": "用户登出接口",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/users/turnOff": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "结束当前业务循环",
+                "tags": [
+                    "结束当前业务循环"
+                ],
+                "summary": "结束当前业务循环",
                 "responses": {
                     "200": {
                         "description": "OK"

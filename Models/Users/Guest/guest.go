@@ -5,6 +5,7 @@ import (
 	"MyTest/Models/Users/User"
 )
 
+// Guest 游客
 type Guest struct {
 	User.User
 	Name string

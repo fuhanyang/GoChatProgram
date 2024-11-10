@@ -33,7 +33,7 @@ func PriRouters() {
 	EntryGroup := PriGroup.Group("/entry")
 	{
 		EntryGroup.GET("/", Controller.LoadEntryPage())
-		EntryGroup.POST("/", Controller.UserLoginIn())
+		EntryGroup.POST("/", Controller.UserSignIn()) //登录之后会需要jwt认证
 	}
 	GuestGroup := PriGroup.Group("/guest")
 	{
@@ -41,24 +41,22 @@ func PriRouters() {
 		GuestGroup.POST("/")
 
 	}
+
 }
 
 // 用户
 func UserRouters() {
 	UsersGroup := router.Group("/users")
-
 	//jwt 中间件
-	UsersGroup.Use(Controller.JWTAuthMiddleware())
-
+	UsersGroup.Use(Controller.JWTAuthMiddleware(), Controller.CheckOnlineStatus())
 	{
-		UsersGroup.GET(":accountNum", Controller.LoadUsersPage())
+		UsersGroup.GET("/", Controller.LoadUsersPage())
+		UsersGroup.POST("/turnoff", Controller.SendOffCommand())
+		UsersGroup.POST("/signoff", Controller.SignOffWithUserOpt())
 	}
+
 	//查看别的用户的信息的一些接口
 	ReceiverGroup := UsersGroup.Group("/rec")
-
-	//jwt 中间件
-	ReceiverGroup.Use(Controller.JWTAuthMiddleware())
-
 	{
 		//查看和别的用户的对话信息
 		ReceiverGroup.GET("/:rec_id", Controller.LoadUserMsgPage())

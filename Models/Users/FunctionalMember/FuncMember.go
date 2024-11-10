@@ -10,6 +10,7 @@ import (
 	"time"
 )
 
+// FuncMember 注册的用户
 type FuncMember struct {
 	User.User
 	AccountNum int64 `gorm:"primary key" json:"account_num"`

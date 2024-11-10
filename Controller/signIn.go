@@ -1,12 +1,11 @@
 package Controller
 
 import (
-	"MyTest/Logic/log"
+	"MyTest/Logic/Notice"
 	"MyTest/Logic/user_managment/UserCreate"
 	"MyTest/Logic/user_managment/UserHandle"
 	"MyTest/Models/Error"
 	"MyTest/Models/Users/FunctionalMember"
-	"context"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -24,7 +23,7 @@ func LoadEntryPage() gin.HandlerFunc {
 	}
 }
 
-// UserLoginIn 用户登录接口
+// UserSignIn 用户登录接口
 // @Summary 用户登录接口
 // @Description 用户登录接口
 // @Tags 用户登录接口
@@ -32,10 +31,10 @@ func LoadEntryPage() gin.HandlerFunc {
 // @Param user body FunctionalMember.FuncMember true "用户登录信息"
 // @Success 200
 // @Router /pri/entry/ [post]
-func UserLoginIn() gin.HandlerFunc {
+func UserSignIn() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		//捕获异常
-		defer log.RecoverPanic()
+		defer Notice.RecoverPanic()
 		//用户登录，同步数据
 		var UserData FunctionalMember.FuncMember
 		if err := c.BindJSON(&UserData); err != nil {
@@ -51,8 +50,7 @@ func UserLoginIn() gin.HandlerFunc {
 
 		if M != nil {
 			//用户上线
-			var ctx context.Context
-			Error.NewErrHandle(UserHandle.UserOnline(M, ctx)).WriteErr().ViewErr()
+			Error.NewErrHandle(UserHandle.UserOnline(M)).WriteErr().ViewErr()
 			//显示用户信息
 		} else {
 			c.JSON(http.StatusConflict, gin.H{"password": "wrong"})

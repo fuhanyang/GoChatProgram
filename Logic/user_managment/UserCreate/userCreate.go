@@ -2,7 +2,7 @@ package UserCreate
 
 import (
 	"MyTest/DAO/Mysql"
-	"MyTest/Logic/log"
+	"MyTest/Logic/Notice"
 	"MyTest/Logic/user_managment/Snowflake"
 	"MyTest/Logic/user_managment/TypeDefine"
 	"MyTest/Logic/user_managment/UserHandle"
@@ -27,7 +27,7 @@ func GetFuncMember(AccountNum int64) *FunctionalMember.FuncMember {
 // CreateAccountNum 产生账号
 func CreateAccountNum() int64 {
 	//捕获异常
-	defer log.RecoverPanic()
+	defer Notice.RecoverPanic()
 	AccountNum := Snowflake.GetID()
 	fmt.Println("account num is ", AccountNum)
 	return AccountNum
@@ -36,7 +36,7 @@ func CreateAccountNum() int64 {
 // UserSignUp 注册
 func UserSignUp(IP string, PassWord string, Name string) (M *FunctionalMember.FuncMember) {
 	//捕获异常
-	defer log.RecoverPanic()
+	defer Notice.RecoverPanic()
 
 	M = FunctionalMember.NewFuncMember(Name, IP, CreateAccountNum(), PassWord)
 	if M != nil {
@@ -53,7 +53,7 @@ func UserSignUp(IP string, PassWord string, Name string) (M *FunctionalMember.Fu
 // UserSignIn 登录
 func UserSignIn(PassWord string, AccountNum int64, ip string) (*FunctionalMember.FuncMember, error) {
 	//捕获异常
-	defer log.RecoverPanic()
+	defer Notice.RecoverPanic()
 
 	M := GetFuncMember(AccountNum)
 	if M == nil {
@@ -65,9 +65,8 @@ func UserSignIn(PassWord string, AccountNum int64, ip string) (*FunctionalMember
 
 		//获取用户操作
 		obj := TypeDefine.UserObj{
-			Opt:          UserHandle.GetOptCh(*M),
-			IdentityCode: UserHandle.UserIdentityCode(UserHandle.GetAccountNum(M.GetID()), M.GetIP()),
-			ViewData:     UserHandle.GetViewDataCh(*M),
+			Opt:      UserHandle.GetOptCh(*M),
+			ViewData: UserHandle.GetViewDataCh(*M),
 		}
 
 		TypeDefine.Mu.Lock()
@@ -75,7 +74,7 @@ func UserSignIn(PassWord string, AccountNum int64, ip string) (*FunctionalMember
 		TypeDefine.Mu.Unlock()
 
 		//日志写入
-		log.WriteLog("FuncMember sign in ", fmt.Sprintf("accountNum:%d Name:%s", M.AccountNum, M.Name))
+		Notice.WriteLog("FuncMember sign in ", fmt.Sprintf("accountNum:%d Name:%s", M.AccountNum, M.Name))
 
 		return M, nil
 	} else {
@@ -85,10 +84,17 @@ func UserSignIn(PassWord string, AccountNum int64, ip string) (*FunctionalMember
 }
 
 // UserLogOff 下线
-func UserLogOff(PassWord string, AccountNum int64) {
+func UserLogOff(AccountNum int64) {
 	M := GetFuncMember(AccountNum)
-	if PassWord == M.PassWord {
-		M.UserLogOff()
-
+	if M == nil {
+		err := Error.ErrorInit("This user is not exist!Log off failed!", 400)
+		Error.NewErrHandle(err).WriteErr().ViewErr()
+		return
 	}
+	//改变在线状态
+	if M.GetOnlineStatus() == false {
+		Error.NewErrHandle(Error.ErrorInit("User online status is wrong", 400)).WriteErr()
+		return
+	}
+	M.ChangeOnlineStatus()
 }

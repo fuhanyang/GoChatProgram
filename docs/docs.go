@@ -24,7 +24,26 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/entry/": {
+        "/pri/": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "加载最初界面",
+                "tags": [
+                    "加载最初界面接口"
+                ],
+                "summary": "加载最初界面接口",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/pri/entry/": {
             "get": {
                 "security": [
                     {
@@ -71,26 +90,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/pri/": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "加载最初界面",
-                "tags": [
-                    "加载最初界面接口"
-                ],
-                "summary": "加载最初界面接口",
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
-        },
-        "/regi/": {
+        "/pri/regi/": {
             "get": {
                 "security": [
                     {
@@ -137,7 +137,26 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/rec//{rec_id}/{accountNum}": {
+        "/users//": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "加载用户信息界面",
+                "tags": [
+                    "加载用户信息界面接口"
+                ],
+                "summary": "加载用户信息界面接口",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/users/rec/{rec_id}": {
             "get": {
                 "security": [
                     {
@@ -173,18 +192,37 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{accountNum}/": {
-            "get": {
+        "/users/signoff": {
+            "post": {
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "加载用户信息界面",
+                "description": "用户登出接口",
                 "tags": [
-                    "加载用户信息界面接口"
+                    ""
                 ],
-                "summary": "加载用户信息界面接口",
+                "summary": "用户登出接口",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/users/turnOff": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "结束当前业务循环",
+                "tags": [
+                    "结束当前业务循环"
+                ],
+                "summary": "结束当前业务循环",
                 "responses": {
                     "200": {
                         "description": "OK"

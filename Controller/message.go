@@ -1,8 +1,10 @@
 package Controller
 
 import (
-	"MyTest/Logic/RuleChain/UserRuleChain"
-	"MyTest/Logic/log"
+	"MyTest/Logic/Notice"
+	"MyTest/Logic/RuleChain"
+	"MyTest/Logic/RuleChain/Check"
+	"MyTest/Logic/message_systerm"
 	"MyTest/Logic/user_managment/TypeDefine"
 	"MyTest/Logic/user_managment/UserCreate"
 	"MyTest/Models/Error"
@@ -27,13 +29,13 @@ type content struct {
 func LoadUserMsgPage() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		//捕获异常
-		defer log.RecoverPanic()
+		defer Notice.RecoverPanic()
 		fmt.Println("load user msg page")
 		//获取用户信息
-		accountNum, rec_id := c.GetInt64("account_num"), c.Param("rec_id")
+		accountNum, rec_id := c.GetInt64(TypeDefine.AccountNum), c.Param("rec_id")
 
 		//check操作进入管道
-		UserRuleChain.GetUserCheckOpt(accountNum, rec_id)
+		Check.GetUserCheckOpt(accountNum, rec_id)
 
 		//读取要发给前端的数据
 		TypeDefine.Mu.Lock()
@@ -45,13 +47,13 @@ func LoadUserMsgPage() gin.HandlerFunc {
 		}
 		fmt.Println("get data from channel")
 
-		if Data.Type != "message" {
+		if Data.Type != message_systerm.Msg {
 			Error.NewErrHandle(Error.ErrorInit("Data type error", 400)).WriteErr()
 		} else {
 			if m, ok := Data.Data.([]Models.Message); ok {
 				for _, v := range m {
 
-					c.JSON(http.StatusOK, v.Content)
+					c.JSON(http.StatusOK, v.Content+"\n")
 				}
 			}
 		}
@@ -64,7 +66,7 @@ func LoadUserMsgPage() gin.HandlerFunc {
 // @Tags 发送消息给用户接口
 // @Security ApiKeyAuth
 // @Success 200
-// @Router /users/rec//{rec_id} [post]
+// @Router /users/rec/{rec_id} [post]
 func SendMsgToUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		//构造消息体
@@ -74,11 +76,15 @@ func SendMsgToUser() gin.HandlerFunc {
 		if err != nil {
 			Error.NewErrHandle(err).WriteErr().ViewErr()
 		}
-		M := Models.NewMessage(UserCreate.GetFuncMember(c.GetInt64("account_num")).GetID(), uint(id), Content.Content)
+		M := Models.NewMessage(UserCreate.GetFuncMember(c.GetInt64(TypeDefine.AccountNum)).GetID(), uint(id), Content.Content)
 
 		//发送消息给用户
 		TypeDefine.Mu.Lock()
-		TypeDefine.UserMap[c.GetInt64("account_num")].Opt.Ch <- map[interface{}]interface{}{"opt_type": "sendMsg", "msg": M.Content, "id": M.ReceiverID}
+		TypeDefine.UserMap[c.GetInt64(TypeDefine.AccountNum)].Opt.Ch <- map[interface{}]interface{}{
+			RuleChain.Opt_Type:    RuleChain.SendMsg,
+			message_systerm.Msg:   M.Content,
+			TypeDefine.AccountNum: c.GetInt64(TypeDefine.AccountNum),
+			"rec_id":              M.ReceiverID}
 		TypeDefine.Mu.Unlock()
 	}
 }

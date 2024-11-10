@@ -1,15 +1,13 @@
-package UserRuleChain
+package Seek
 
-import "C"
 import (
+	"MyTest/Logic/Notice"
 	"MyTest/Logic/RuleChain"
-	"MyTest/Logic/log"
 	"MyTest/Logic/user_managment/TypeDefine"
 	"MyTest/Models/Error"
 	"MyTest/Models/Users/FunctionalMember"
 	"MyTest/view"
 	"context"
-	"errors"
 )
 
 type SeekRuleChain struct {
@@ -23,32 +21,34 @@ func NewSeekRuleChain(next RuleChain.RuleMap) RuleChain.RuleChain {
 		},
 	}
 }
-
 func (S *SeekRuleChain) Apply(ctx context.Context, params RuleChain.Params) error {
-	if ch, ok := params["ch"].(TypeDefine.UserOptChan); !ok {
+	if ch, ok := params[TypeDefine.Ch].(TypeDefine.UserOptChan); !ok {
 		return Error.ErrorInit("Get User option chan wrong!", 400)
 	} else {
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
 		//当前的业务调用
-		opt, _ := params["opt"].(map[interface{}]interface{})
-		name, _ := opt["name"].(string)
+		opt, _ := params[TypeDefine.Opt].(map[interface{}]interface{})
+		name, _ := opt[TypeDefine.Name].(string)
 		M := SeekUser(name, 10)
 
 		for {
 			view.PrintUser(M)
 			//递归调用之后的业务
-			opt = <-ch
-			params["opt"] = opt
+			var opt map[interface{}]interface{}
+			select {
+			case <-ctx.Done():
+				return ctx.Err()
+			case opt = <-ch:
+			}
+			params[TypeDefine.Opt] = opt
 			err := S.ApplyNext(ctx, params)
 			//有错误则打印错误，继续循环,exit退出
-			if err == nil {
-				continue
-			}
-			var err1 *Error.MyError
-			if errors.As(err, &err1) && err1.Code == 1000 {
-				//exit
+			if err != nil {
+				Error.NewErrHandle(err).WriteErr().ViewErr()
 				return nil
 			}
-			Error.NewErrHandle(err1).WriteErr().ViewErr()
 		}
 	}
 
@@ -56,7 +56,7 @@ func (S *SeekRuleChain) Apply(ctx context.Context, params RuleChain.Params) erro
 
 func SeekUser(name string, limit int) []FunctionalMember.FuncMember {
 	//捕获异常
-	defer log.RecoverPanic()
+	defer Notice.RecoverPanic()
 
 	var M []FunctionalMember.FuncMember
 	M, err := FunctionalMember.GetUsers(limit, name)
